@@ -106,7 +106,11 @@ int main(void)
 #endif
   
   //printtest for seeing modification
-  printf("Version 2 - Modified March 1 2018 - Joshua Perkins");
+  printf("Version 4 - Modified April 3 2018 - Joshua Perkins\r");
+  printf("ati\r");
+  printf("atrv\r");
+  printf("clear\r");
+  printf("ati\r");
 
   cloud_test(0);
 }
@@ -252,7 +256,7 @@ uint8_t Button_WaitForPush(uint32_t delay)
   */
 static void Console_UART_Init(void)
 {
-  console_uart.Instance = USART1;
+  console_uart.Instance = UART4;
   console_uart.Init.BaudRate = 115200;
   console_uart.Init.WordLength = UART_WORDLENGTH_8B;
   console_uart.Init.StopBits = UART_STOPBITS_1;

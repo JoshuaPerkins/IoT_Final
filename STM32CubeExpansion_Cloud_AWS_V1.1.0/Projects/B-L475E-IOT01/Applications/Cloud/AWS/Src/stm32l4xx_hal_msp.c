@@ -56,10 +56,11 @@
  {
   RCC_PeriphCLKInitTypeDef PeriphClkInit;
   PeriphClkInit.PeriphClockSelection  = RCC_PERIPHCLK_RTC|RCC_PERIPHCLK_USART1
-                                       |RCC_PERIPHCLK_USART3|RCC_PERIPHCLK_I2C2
+                                       |RCC_PERIPHCLK_USART3|RCC_PERIPHCLK_UART4|RCC_PERIPHCLK_I2C2
                                        |RCC_PERIPHCLK_RNG;
   PeriphClkInit.Usart1ClockSelection  = RCC_USART1CLKSOURCE_PCLK2;
   PeriphClkInit.Usart3ClockSelection  = RCC_USART3CLKSOURCE_PCLK1;
+  PeriphClkInit.Uart4ClockSelection   = RCC_UART4CLKSOURCE_PCLK1;
   PeriphClkInit.I2c2ClockSelection    = RCC_I2C2CLKSOURCE_PCLK1;
   PeriphClkInit.RngClockSelection     = RCC_RNGCLKSOURCE_MSI;
 
