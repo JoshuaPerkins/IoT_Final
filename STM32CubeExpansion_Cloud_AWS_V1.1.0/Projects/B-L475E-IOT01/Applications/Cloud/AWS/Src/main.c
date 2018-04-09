@@ -106,11 +106,15 @@ int main(void)
 #endif
   
   //printtest for seeing modification
-  printf("Version 4 - Modified April 3 2018 - Joshua Perkins\r");
+
   printf("ati\r");
   printf("atrv\r");
   printf("clear\r");
   printf("ati\r");
+
+  //HAL_Delay(2000);
+
+  printf("Version 5 - Modified April 6 2018 - Joshua Perkins\n\r");
 
   cloud_test(0);
 }
