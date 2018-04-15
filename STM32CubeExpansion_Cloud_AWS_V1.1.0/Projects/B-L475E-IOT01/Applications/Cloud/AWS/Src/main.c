@@ -104,17 +104,11 @@ int main(void)
 #ifdef FIREWALL_MBEDLIB
   firewall_init();
 #endif
-  
-  //printtest for seeing modification
 
-  printf("ati\r");
-  printf("atrv\r");
-  printf("clear\r");
-  printf("ati\r");
-
-  //HAL_Delay(2000);
-
-  printf("Version 5 - Modified April 6 2018 - Joshua Perkins\n\r");
+  printf("Version 6 - Modified April 14 2018 - Joshua Perkins\n");
+  printf("\n\nBuild Information:\n");
+  printf("Modifying for Port Forwarding use through USART1.\n");
+  printf("Set up MQTT subscribe message for ODB data.\n");
 
   cloud_test(0);
 }
@@ -260,7 +254,7 @@ uint8_t Button_WaitForPush(uint32_t delay)
   */
 static void Console_UART_Init(void)
 {
-  console_uart.Instance = UART4;
+  console_uart.Instance = USART1;
   console_uart.Init.BaudRate = 115200;
   console_uart.Init.WordLength = UART_WORDLENGTH_8B;
   console_uart.Init.StopBits = UART_STOPBITS_1;

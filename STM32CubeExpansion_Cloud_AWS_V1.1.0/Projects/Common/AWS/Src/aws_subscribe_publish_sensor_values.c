@@ -79,7 +79,7 @@ static char cSTopicName[MAX_SHADOW_TOPIC_LENGTH_BYTES] = "";
 * @brief This parameter will avoid infinite loop of publish and exit the program after certain number of publishes
 */
 // Define time for number of publishes (60 default)
-static uint32_t publishCount = 10; 	//2s per publish; count of 150 is about 5min of run time
+static uint32_t publishCount = IOT_PUBLISH_COUNT; 	//2s per publish; count of 150 is about 5min of run time
 
 /* Functions Definition ------------------------------------------------------*/
 
@@ -138,11 +138,22 @@ void MQTTcallbackHandler(AWS_IoT_Client *pClient, char *topicName, uint16_t topi
   const char msg_on[]  = "{\"state\":{\"reported\":{\"LED_value\":\"On\"}}}";
   const char msg_off[] = "{\"state\":{\"reported\":{\"LED_value\":\"Off\"}}}";
   const char *msg = NULL;
+  static char firstMessage = 0;
+
   IoT_Publish_Message_Params paramsQOS1;
   paramsQOS1.qos = QOS1;
   
-  msg_info("\nMQTT subscribe callback......\n");
-  msg_info("%.*s\n", (int)params->payloadLen, (char *)params->payload);
+  // Prints on first callback msg and stops other callbacks from printing
+  if (firstMessage == 0) {
+    msg_info("\nMQTT subscribe callback......\n");
+    msg_info("%.*s\n", (int)params->payloadLen, (char *)params->payload);
+    firstMessage++;
+
+    // Waits for 5s to connect ODB/USART1 in port forwarding mode
+    // Intended to stop ODB reader from receiving multiple invalid commands
+    printf("\n\n---___ 5s Delay to connect ODB/UART Forwarding ___---\n\n");
+    HAL_Delay(5000);
+  }
   
   /* If a new desired LED state is received, change the LED state. */
   if (strstr((char *) params->payload, "\"desired\":{\"LED_value\":\"On\"}") != NULL)
@@ -396,6 +407,7 @@ int subscribe_publish_sensor_values(void)
     {
       timeCounter = 0;
             
+      // Modified payload to accept ODB command returns
       PrepareMqttPayload(cPayload, sizeof(cPayload), NULL);           
             
       paramsQOS1.payloadLen = strlen(cPayload) + 1;
@@ -406,8 +418,11 @@ int subscribe_publish_sensor_values(void)
 
         if (rc == AWS_SUCCESS)
         {
-          printf("\nPublished to topic %s:\n", cPTopicName);
-          printf("%s\n", cPayload);
+          // Checks for first publish to print first MQTT to check integrity
+          if (publishCount == IOT_PUBLISH_COUNT) {
+            printf("\nPublished to topic %s:\n", cPTopicName);
+            printf("%s\n", cPayload);
+          }
         }
 
         if (publishCount > 0)
