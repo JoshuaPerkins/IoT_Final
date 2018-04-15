@@ -104,9 +104,11 @@ int main(void)
 #ifdef FIREWALL_MBEDLIB
   firewall_init();
 #endif
-  
-  //printtest for seeing modification
-  printf("Version 2 - Modified March 1 2018 - Joshua Perkins");
+
+  printf("Version 6 - Modified April 14 2018 - Joshua Perkins\n");
+  printf("\n\nBuild Information:\n");
+  printf("Modifying for Port Forwarding use through USART1.\n");
+  printf("Set up MQTT subscribe message for ODB data.\n");
 
   cloud_test(0);
 }
