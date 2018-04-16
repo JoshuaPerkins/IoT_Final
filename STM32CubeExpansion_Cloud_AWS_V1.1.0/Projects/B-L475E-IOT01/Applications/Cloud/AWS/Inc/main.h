@@ -41,7 +41,7 @@
   * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
   * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
   * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-  *
+  * 
   ******************************************************************************
   */
  
@@ -81,7 +81,7 @@
 #include "sensors_data.h"
 #define RFU
 
- // Defining IOT Project PUBLISH count
+ // Defining IOT Project PUBLISH count for aws publishes
 #ifndef IOT_PUBLISH_COUNT
 #define IOT_PUBLISH_COUNT 5
 #endif
