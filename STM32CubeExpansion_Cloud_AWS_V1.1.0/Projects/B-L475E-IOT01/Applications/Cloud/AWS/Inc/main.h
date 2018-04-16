@@ -83,7 +83,7 @@
 
  // Defining IOT Project PUBLISH count
 #ifndef IOT_PUBLISH_COUNT
-#define IOT_PUBLISH_COUNT 10
+#define IOT_PUBLISH_COUNT 5
 #endif
 
 #ifdef USE_MBED_TLS

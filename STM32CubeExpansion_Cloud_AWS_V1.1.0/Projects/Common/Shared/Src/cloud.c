@@ -205,16 +205,16 @@ int platform_init(void)
     srand(random_number);
   }
 
-//  printf("\n");
-//  printf("**************************************************************************\n");
-//  printf("***   STM32 IoT Discovery kit for STM32L475/STM32F413/STM32F769 MCU    ***\n");
-//  printf("***   %s Cloud Connectivity Demonstration\n",
-//           fw_version->name);
-//  printf("***   FW version %d.%d.%d - %s, %s                         ***\n",
-//           fw_version->major, fw_version->minor, fw_version->patch, fw_version->build_date, fw_version->build_time);
-//  printf("**************************************************************************\n");
-//
-//  printf("\n*** Board personalization ***\n\n");
+  printf("\n");
+  printf("**************************************************************************\n");
+  printf("***   STM32 IoT Discovery kit for STM32L475/STM32F413/STM32F769 MCU    ***\n");
+  printf("***   %s Cloud Connectivity Demonstration\n",
+           fw_version->name);
+  printf("***   FW version %d.%d.%d - %s, %s                         ***\n",
+           fw_version->major, fw_version->minor, fw_version->patch, fw_version->build_date, fw_version->build_time);
+  printf("**************************************************************************\n");
+
+  printf("\n*** Board personalization ***\n\n");
   /* Network initialization */
   if (net_init(&hnet, NET_IF, (net_if_init)) != NET_OK)
   {

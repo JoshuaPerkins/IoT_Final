@@ -63,7 +63,7 @@ int subscribe_publish_sensor_values(void);
 /* Private defines ------------------------------------------------------------*/
 #define MQTT_CONNECT_MAX_ATTEMPT_COUNT 3
 // Define time for publish (10 default)
-#define TIMER_COUNT_FOR_SENSOR_PUBLISH 1
+#define TIMER_COUNT_FOR_SENSOR_PUBLISH 10
 
 #define aws_json_pre        "{\"state\":{\"reported\":"
 #define aws_json_desired    "{\"state\":{\"desired\":"
@@ -151,8 +151,8 @@ void MQTTcallbackHandler(AWS_IoT_Client *pClient, char *topicName, uint16_t topi
 
     // Waits for 5s to connect ODB/USART1 in port forwarding mode
     // Intended to stop ODB reader from receiving multiple invalid commands
-    printf("\n\n---___ 5s Delay to connect ODB/UART Forwarding ___---\n\n");
-    HAL_Delay(5000);
+    printf("\n\n---___ 10s Delay to connect ODB/UART Forwarding ___---\n\n");
+    HAL_Delay(10000);
   }
   
   /* If a new desired LED state is received, change the LED state. */
@@ -442,6 +442,5 @@ int subscribe_publish_sensor_values(void)
 
   return rc;
 }
-
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

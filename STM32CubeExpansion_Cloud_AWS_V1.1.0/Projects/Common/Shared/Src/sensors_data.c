@@ -75,8 +75,17 @@ static int16_t  ACC_Value[3];
 static float    GYR_Value[3];
 static int16_t  MAG_Value[3];
 static uint16_t PROXIMITY_Value;
+static char outputString1[12];
+//static char outputString2[12];
+//static char outputString3[12];
+static int sum1 = 0;
+static int sum2 = 0;
+static int sum3 = 0;
+
+//static char* outputString4;
 
 /* Private function prototypes -----------------------------------------------*/
+int getInputStringSensor(char* inputString, int commandType);
 /* Functions Definition ------------------------------------------------------*/
 
 /**
@@ -143,6 +152,7 @@ int PrepareMqttPayload(char * PayloadBuffer, int PayloadSize, char * deviceID)
   char * Buff = PayloadBuffer;
   int BuffSize = PayloadSize;
   int snprintfreturn = 0;
+  static int counter = 0;
 
   TEMPERATURE_Value = BSP_TSENSOR_ReadTemp();
   HUMIDITY_Value = BSP_HSENSOR_ReadHumidity();
@@ -151,6 +161,24 @@ int PrepareMqttPayload(char * PayloadBuffer, int PayloadSize, char * deviceID)
   BSP_ACCELERO_AccGetXYZ(ACC_Value);
   BSP_GYRO_GetXYZ(GYR_Value);
   BSP_MAGNETO_GetXYZ(MAG_Value);
+  if (counter == 0) {
+	  counter++;
+  }
+  else {
+	//HAL_Delay(500);
+    sum1 = getInputStringSensor(outputString1, 1);
+   // HAL_Delay(500);
+   // sum2 = getInputStringSensor(outputString2, 2);
+   // HAL_Delay(500);
+   // sum3 = getInputStringSensor(outputString3, 3);
+   // HAL_Delay(500);
+    //getInputStringSensor(outputString4, 4);
+//    if (counter == 1){
+//    	HAL_Delay(5000);
+//    	counter++;
+//    }
+  }
+
 
   // Insert ODB commands and calculations
 
@@ -190,13 +218,13 @@ int PrepareMqttPayload(char * PayloadBuffer, int PayloadSize, char * deviceID)
            "   \"acc_x\": %d, \"acc_y\": %d, \"acc_z\": %d,\n"
            "   \"gyr_x\": %.0f, \"gyr_y\": %.0f, \"gyr_z\": %.0f,\n"
            "   \"mag_x\": %d, \"mag_y\": %d, \"mag_z\": %d,\n"
-    	   "   \"ODB_data1\": %.2f, \"ODB_data2\": %.2f, \"ODB_data3\": %.2f"
+    	   "   \"ODB_data1\": %d, \"ODB_data2\": %d, \"ODB_data3\": %d"
            "  }\n }\n}",
            TEMPERATURE_Value, HUMIDITY_Value, PRESSURE_Value, PROXIMITY_Value,
            ACC_Value[0], ACC_Value[1], ACC_Value[2],
            GYR_Value[0], GYR_Value[1], GYR_Value[2],
            MAG_Value[0], MAG_Value[1], MAG_Value[2],
-		   TEMPERATURE_Value, HUMIDITY_Value, PRESSURE_Value);	// Values to be replaced with ODB data/calculations
+		   sum1, sum2, sum3);	// Values to be replaced with ODB data/calculations
   }
  #endif
   /* Check total size to be less than buffer size
@@ -220,6 +248,62 @@ int PrepareMqttPayload(char * PayloadBuffer, int PayloadSize, char * deviceID)
       msg_error("Data Pack Error\n");
       return -1;
   }
+}
+
+
+// Added functionality for getting return information from ODB reader
+int getInputStringSensor(char* inputString, int commandType)
+{
+  static int counter = 0;
+  int len = 12;	// change to 8?
+  size_t currLen = 0;
+  int c = 0;
+
+  switch(commandType)
+  {
+    case 1:
+      printf("ATI\r");
+	  break;
+//    case 2:
+//      printf("ATRV\r");
+//	  break;
+//    case 3:
+//      printf("ATI\r");
+//	  break;
+  }
+
+  c = getchar();
+  if (((c == '\r') || (c == 0x0D)) && (counter == 0)){
+	  c = getchar();
+  }
+  counter++;
+// && (c != '\n') && (c != 0x0D) && (c != 0x0A)
+  while ((c != EOF) && ((currLen + 1) < len) && (c != '\r'))
+  {
+
+    if (currLen < (len-1))
+    {
+      inputString[currLen] = c;
+    }
+
+    ++currLen;
+
+    c = getchar();
+
+    //printf("Char: %c\n",c);
+  }
+  if (currLen != 0)
+  { /* Close the string in the input buffer... only if a string was written to it. */
+    inputString[currLen] = '\0';
+  }
+//  if (c == '\r')
+//  {
+//    c = getchar(); /* assume there is '\n' after '\r'. Just discard it. */
+//  }
+
+  //printf("%s", inputString);
+  counter = 0;
+  return currLen;
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

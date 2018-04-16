@@ -105,10 +105,12 @@ int main(void)
   firewall_init();
 #endif
 
-  printf("Version 6 - Modified April 14 2018 - Joshua Perkins\n");
-  printf("\n\nBuild Information:\n");
+  printf("Version 7 - Modified April 15 2018 - Joshua Perkins\n");
+  printf("\n************************************************************\n");
+  printf("Build Information:\n");
   printf("Modifying for Port Forwarding use through USART1.\n");
   printf("Set up MQTT subscribe message for ODB data.\n");
+  printf("\n************************************************************\n");
 
   cloud_test(0);
 }
