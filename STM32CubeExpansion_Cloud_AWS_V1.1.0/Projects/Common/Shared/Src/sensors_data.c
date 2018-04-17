@@ -75,7 +75,7 @@ static int16_t  ACC_Value[3];
 static float    GYR_Value[3];
 static int16_t  MAG_Value[3];
 static uint16_t PROXIMITY_Value;
-static char outputString1[12];
+static char outputString1[24];
 //static char outputString2[12];
 //static char outputString3[12];
 static int sum1 = 0;
@@ -86,6 +86,7 @@ static int sum3 = 0;
 
 /* Private function prototypes -----------------------------------------------*/
 int getInputStringSensor(char* inputString, int commandType);
+//void clearRx();
 /* Functions Definition ------------------------------------------------------*/
 
 /**
@@ -163,9 +164,11 @@ int PrepareMqttPayload(char * PayloadBuffer, int PayloadSize, char * deviceID)
   BSP_MAGNETO_GetXYZ(MAG_Value);
   if (counter == 0) {
 	  counter++;
+
   }
   else {
 	//HAL_Delay(500);
+
     sum1 = getInputStringSensor(outputString1, 1);
    // HAL_Delay(500);
    // sum2 = getInputStringSensor(outputString2, 2);
@@ -251,11 +254,22 @@ int PrepareMqttPayload(char * PayloadBuffer, int PayloadSize, char * deviceID)
 }
 
 
+//void clearRx()
+//{
+//  int i = 0;
+//  int c;
+//  while (i < 25)
+//  {
+//    c = getchar();
+//    i++;
+//  }
+//}
+
 // Added functionality for getting return information from ODB reader
 int getInputStringSensor(char* inputString, int commandType)
 {
-  static int counter = 0;
-  int len = 12;	// change to 8?
+  //static int counter = 0;
+  int len = 24;	// change to 8?
   size_t currLen = 0;
   int c = 0;
 
@@ -273,11 +287,18 @@ int getInputStringSensor(char* inputString, int commandType)
   }
 
   c = getchar();
-  if (((c == '\r') || (c == 0x0D)) && (counter == 0)){
+//  if (((c == '\r') || (c == 0x0D)) && (counter == 0)){
+//	  c = getchar();
+//  }
+  //counter++;
+// && (c != '\n') && (c != 0x0D) && (c != 0x0A)
+  while (c != '\r')
+  {
 	  c = getchar();
   }
-  counter++;
-// && (c != '\n') && (c != 0x0D) && (c != 0x0A)
+
+  c = getchar();
+
   while ((c != EOF) && ((currLen + 1) < len) && (c != '\r'))
   {
 
@@ -296,13 +317,13 @@ int getInputStringSensor(char* inputString, int commandType)
   { /* Close the string in the input buffer... only if a string was written to it. */
     inputString[currLen] = '\0';
   }
-//  if (c == '\r')
-//  {
-//    c = getchar(); /* assume there is '\n' after '\r'. Just discard it. */
-//  }
+  if (c == '\r')
+  {
+    c = getchar(); /* assume there is '\n' after '\r'. Just discard it. */
+  }
 
   //printf("%s", inputString);
-  counter = 0;
+  //counter = 0;
   return currLen;
 }
 
