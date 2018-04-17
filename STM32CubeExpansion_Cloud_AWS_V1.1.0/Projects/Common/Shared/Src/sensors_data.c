@@ -76,13 +76,11 @@ static float    GYR_Value[3];
 static int16_t  MAG_Value[3];
 static uint16_t PROXIMITY_Value;
 static char outputString1[24];
-//static char outputString2[12];
-//static char outputString3[12];
+static char outputString2[24];
+//static char outputString3[24];
 static int sum1 = 0;
 static int sum2 = 0;
 static int sum3 = 0;
-
-//static char* outputString4;
 
 /* Private function prototypes -----------------------------------------------*/
 int getInputStringSensor(char* inputString, int commandType);
@@ -171,7 +169,7 @@ int PrepareMqttPayload(char * PayloadBuffer, int PayloadSize, char * deviceID)
 
     sum1 = getInputStringSensor(outputString1, 1);
    // HAL_Delay(500);
-   // sum2 = getInputStringSensor(outputString2, 2);
+    sum2 = getInputStringSensor(outputString2, 2);
    // HAL_Delay(500);
    // sum3 = getInputStringSensor(outputString3, 3);
    // HAL_Delay(500);
@@ -278,9 +276,9 @@ int getInputStringSensor(char* inputString, int commandType)
     case 1:
       printf("ATI\r");
 	  break;
-//    case 2:
-//      printf("ATRV\r");
-//	  break;
+    case 2:
+      printf("ATRV\r");
+	  break;
 //    case 3:
 //      printf("ATI\r");
 //	  break;
