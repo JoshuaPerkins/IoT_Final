@@ -77,10 +77,12 @@ static int16_t  MAG_Value[3];
 static uint16_t PROXIMITY_Value;
 static char outputString1[24];
 static char outputString2[24];
-//static char outputString3[24];
+static char outputString3[24];
+static char outputString4[24];
 static int sum1 = 0;
 static int sum2 = 0;
 static int sum3 = 0;
+static int sum4 = 0;
 
 /* Private function prototypes -----------------------------------------------*/
 int getInputStringSensor(char* inputString, int commandType);
@@ -171,9 +173,9 @@ int PrepareMqttPayload(char * PayloadBuffer, int PayloadSize, char * deviceID)
    // HAL_Delay(500);
     sum2 = getInputStringSensor(outputString2, 2);
    // HAL_Delay(500);
-   // sum3 = getInputStringSensor(outputString3, 3);
+    sum3 = getInputStringSensor(outputString3, 3);
    // HAL_Delay(500);
-    //getInputStringSensor(outputString4, 4);
+    sum4 = getInputStringSensor(outputString4, 4);
 //    if (counter == 1){
 //    	HAL_Delay(5000);
 //    	counter++;
@@ -274,14 +276,17 @@ int getInputStringSensor(char* inputString, int commandType)
   switch(commandType)
   {
     case 1:
-      printf("ATI\r");
+      printf("010D\r");
 	  break;
     case 2:
-      printf("ATRV\r");
+      printf("010B\r");
 	  break;
-//    case 3:
-//      printf("ATI\r");
-//	  break;
+    case 3:
+      printf("010C\r");
+	  break;
+    case 4:
+      printf("0144\r");
+      break;
   }
 
   c = getchar();
