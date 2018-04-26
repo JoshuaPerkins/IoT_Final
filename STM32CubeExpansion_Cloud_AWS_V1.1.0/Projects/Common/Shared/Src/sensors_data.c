@@ -79,14 +79,14 @@ static char outputString1[24];
 static char outputString2[24];
 static char outputString3[24];
 static char outputString4[24];
-static int sum1 = 0;
-static int sum2 = 0;
-static int sum3 = 0;
-static int sum4 = 0;
+static float vehicleSpeed = 0.0;
+static float intakePressure = 0.0;
+static float engineRPM = 0.0;
+static float fuelAirRatio = 0.0;
 
 /* Private function prototypes -----------------------------------------------*/
 int getInputStringSensor(char* inputString, int commandType);
-//void clearRx();
+
 /* Functions Definition ------------------------------------------------------*/
 
 /**
@@ -167,19 +167,13 @@ int PrepareMqttPayload(char * PayloadBuffer, int PayloadSize, char * deviceID)
 
   }
   else {
-	//HAL_Delay(500);
+    vehicleSpeed = getInputStringSensor(outputString1, 1);
 
-    sum1 = getInputStringSensor(outputString1, 1);
-   // HAL_Delay(500);
-    sum2 = getInputStringSensor(outputString2, 2);
-   // HAL_Delay(500);
-    sum3 = getInputStringSensor(outputString3, 3);
-   // HAL_Delay(500);
-    sum4 = getInputStringSensor(outputString4, 4);
-//    if (counter == 1){
-//    	HAL_Delay(5000);
-//    	counter++;
-//    }
+    intakePressure = getInputStringSensor(outputString2, 2);
+
+    engineRPM = getInputStringSensor(outputString3, 3);
+
+    fuelAirRatio = getInputStringSensor(outputString4, 4);
   }
 
 
@@ -205,7 +199,7 @@ int PrepareMqttPayload(char * PayloadBuffer, int PayloadSize, char * deviceID)
              "\"temperature\": %.2f, \"humidity\": %.2f, \"pressure\": %.2f, \"proximity\": %d, "
              "\"acc_x\": %d, \"acc_y\": %d, \"acc_z\": %d, "
              "\"gyr_x\": %.0f, \"gyr_y\": %.0f, \"gyr_z\": %.0f, "
-             "\"mag_x\": %d, \"mag_y\": %d, \"mag_z\": %d"
+    		 "\"mag_x\": %d, \"mag_y\": %d, \"mag_z\": %d,\n"
              "}",
              deviceID,
              TEMPERATURE_Value, HUMIDITY_Value, PRESSURE_Value, PROXIMITY_Value,
@@ -221,13 +215,14 @@ int PrepareMqttPayload(char * PayloadBuffer, int PayloadSize, char * deviceID)
            "   \"acc_x\": %d, \"acc_y\": %d, \"acc_z\": %d,\n"
            "   \"gyr_x\": %.0f, \"gyr_y\": %.0f, \"gyr_z\": %.0f,\n"
            "   \"mag_x\": %d, \"mag_y\": %d, \"mag_z\": %d,\n"
-    	   "   \"ODB_data1\": %d, \"ODB_data2\": %d, \"ODB_data3\": %d"
+//		   "   \"Vehicle_Speed\": %.2f, \"Intake_Pressure\": %.2f, \"Engine_RPM\": %.2f, \"FA_Ratio\": %.2f"
+		   "   \"Vehicle_Speed\": %.2f, \"Engine_RPM\": %.2f, \"FA_Ratio\": %.2f"
            "  }\n }\n}",
            TEMPERATURE_Value, HUMIDITY_Value, PRESSURE_Value, PROXIMITY_Value,
            ACC_Value[0], ACC_Value[1], ACC_Value[2],
            GYR_Value[0], GYR_Value[1], GYR_Value[2],
            MAG_Value[0], MAG_Value[1], MAG_Value[2],
-		   sum1, sum2, sum3);	// Values to be replaced with ODB data/calculations
+		   vehicleSpeed, engineRPM, fuelAirRatio);	// Values to be replaced with ODB data/calculations
   }
  #endif
   /* Check total size to be less than buffer size
@@ -325,9 +320,57 @@ int getInputStringSensor(char* inputString, int commandType)
     c = getchar(); /* assume there is '\n' after '\r'. Just discard it. */
   }
 
-  //printf("%s", inputString);
-  //counter = 0;
-  return currLen;
+  //char *ptr;
+ 	    char data1[3];
+ 	    data1[0] = ' ';
+ 	    data1[1] = ' ';
+ 	    data1[2] = '\0';
+ 	    char data2[3];
+ 	    data2[0] = ' ';
+ 	    data2[1] = ' ';
+ 	    data2[2] = '\0';
+ 	    float f1 = 0.0;
+ 	    float f2 = 0.0;
+ 	    float final = 0.0;
+
+ 	    //char *inputCopy;
+
+ 	    //strcpy(inputCopy, input);
+
+ 	    switch(commandType)
+ 	    {
+ 	    	  // 010D: Vehicle Speed
+ 		  case 1:
+ 		  strncpy(data1, inputString+6, 2);
+ 		  f1 = (float)strtol(data1, NULL, 16);
+ 		  final = f1;
+ 		  break;
+ 		  // 010B: Intake manifold absolute pressure
+ 		  case 2:
+ 		  strncpy(data1, inputString+6, 2);
+ 		  f1 = (float)strtol(data1, NULL, 16);
+ 		  final = f1;
+ 		  break;
+ 		// 010C: Engine RPM
+ 		case 3:
+ 		  strncpy(data1, inputString+6, 2);
+ 		  f1 = (float)strtol(data1, NULL, 16);
+ 		  strncpy(data2, inputString+9, 2);
+ 		  f2 = (float)strtol(data2, NULL, 16);
+ 		  final = (256.0*f1 + f2)/4.0;
+ 		  break;
+ 		// 0144: Fuel-Air commanded equivalence ratio
+ 		case 4:
+ 		  strncpy(data1, inputString+6, 2);
+ 		  f1 = (float)strtol(data1, NULL, 16);
+ 		  strncpy(data2, inputString+9, 2);
+ 		  f2 = (float)strtol(data2, NULL, 16);
+ 		  //float a1 = 2/65536;
+ 		  final = (2.0/65536.0)*(256.0*f1+f2);
+ 		  break;
+ 	    }
+
+    return final;
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
