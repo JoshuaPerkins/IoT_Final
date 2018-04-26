@@ -79,7 +79,7 @@ static char cSTopicName[MAX_SHADOW_TOPIC_LENGTH_BYTES] = "";
 * @brief This parameter will avoid infinite loop of publish and exit the program after certain number of publishes
 */
 // Define time for number of publishes (60 default)
-static uint32_t publishCount = IOT_PUBLISH_COUNT; 	//2s per publish; count of 150 is about 5min of run time
+static uint32_t publishCount = 5; 	//2s per publish; count of 150 is about 5min of run time
 
 /* Functions Definition ------------------------------------------------------*/
 
@@ -419,7 +419,7 @@ int subscribe_publish_sensor_values(void)
         if (rc == AWS_SUCCESS)
         {
           // Checks for first publish to print first MQTT to check integrity
-          if (publishCount == IOT_PUBLISH_COUNT) {
+          if (publishCount == 5) {
             printf("\nPublished to topic %s:\n", cPTopicName);
             printf("%s\n", cPayload);
           }

@@ -105,7 +105,7 @@ int main(void)
   firewall_init();
 #endif
 
-  printf("Version 10 - Modified April 22 2018 - Joshua Perkins\n");
+  printf("Version 12 - Modified April 25 2018 - Joshua Perkins\n");
   printf("\n************************************************************\n");
   printf("Build Information:\n");
   printf("Modifying for Port Forwarding use through USART1.\n");
