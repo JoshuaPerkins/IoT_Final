@@ -63,7 +63,9 @@ int subscribe_publish_sensor_values(void);
 /* Private defines ------------------------------------------------------------*/
 #define MQTT_CONNECT_MAX_ATTEMPT_COUNT 3
 // Define time for publish (10 default)
-#define TIMER_COUNT_FOR_SENSOR_PUBLISH 10
+#define TIMER_COUNT_FOR_SENSOR_PUBLISH 1
+// Defining IOT Project PUBLISH count for aws publishes
+#define IOT_PUBLISH_COUNT 50000
 
 #define aws_json_pre        "{\"state\":{\"reported\":"
 #define aws_json_desired    "{\"state\":{\"desired\":"
@@ -79,7 +81,7 @@ static char cSTopicName[MAX_SHADOW_TOPIC_LENGTH_BYTES] = "";
 * @brief This parameter will avoid infinite loop of publish and exit the program after certain number of publishes
 */
 // Define time for number of publishes (60 default)
-static uint32_t publishCount = 5; 	//2s per publish; count of 150 is about 5min of run time
+static uint32_t publishCount = IOT_PUBLISH_COUNT; 	//2s per publish; count of 150 is about 5min of run time
 
 /* Functions Definition ------------------------------------------------------*/
 
@@ -149,7 +151,7 @@ void MQTTcallbackHandler(AWS_IoT_Client *pClient, char *topicName, uint16_t topi
     msg_info("%.*s\n", (int)params->payloadLen, (char *)params->payload);
     firstMessage++;
 
-    // Waits for 5s to connect ODB/USART1 in port forwarding mode
+    // Waits for 10s to connect ODB/USART1 in port forwarding mode
     // Intended to stop ODB reader from receiving multiple invalid commands
     printf("\n\n---___ 10s Delay to connect ODB/UART Forwarding ___---\n\n");
     HAL_Delay(10000);
@@ -419,7 +421,7 @@ int subscribe_publish_sensor_values(void)
         if (rc == AWS_SUCCESS)
         {
           // Checks for first publish to print first MQTT to check integrity
-          if (publishCount == 5) {
+          if (publishCount == IOT_PUBLISH_COUNT) {
             printf("\nPublished to topic %s:\n", cPTopicName);
             printf("%s\n", cPayload);
           }

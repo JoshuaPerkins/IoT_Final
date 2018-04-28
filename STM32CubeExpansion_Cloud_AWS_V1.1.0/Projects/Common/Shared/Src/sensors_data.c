@@ -83,9 +83,11 @@ static float vehicleSpeed = 0.0;
 static float intakePressure = 0.0;
 static float engineRPM = 0.0;
 static float fuelAirRatio = 0.0;
+static float mpg = 0.0;
 
 /* Private function prototypes -----------------------------------------------*/
-int getInputStringSensor(char* inputString, int commandType);
+float getInputStringSensor(char* inputString, int commandType);
+float calculateMPG();
 
 /* Functions Definition ------------------------------------------------------*/
 
@@ -174,6 +176,8 @@ int PrepareMqttPayload(char * PayloadBuffer, int PayloadSize, char * deviceID)
     engineRPM = getInputStringSensor(outputString3, 3);
 
     fuelAirRatio = getInputStringSensor(outputString4, 4);
+
+    mpg = calculateMPG();
   }
 
 
@@ -216,13 +220,13 @@ int PrepareMqttPayload(char * PayloadBuffer, int PayloadSize, char * deviceID)
            "   \"gyr_x\": %.0f, \"gyr_y\": %.0f, \"gyr_z\": %.0f,\n"
            "   \"mag_x\": %d, \"mag_y\": %d, \"mag_z\": %d,\n"
 //		   "   \"Vehicle_Speed\": %.2f, \"Intake_Pressure\": %.2f, \"Engine_RPM\": %.2f, \"FA_Ratio\": %.2f"
-		   "   \"Vehicle_Speed\": %.2f, \"Engine_RPM\": %.2f, \"FA_Ratio\": %.2f"
+		   "   \"Vehicle_Speed\": %.2f, \"Engine_RPM\": %.2f, \"MPG\": %.2f"
            "  }\n }\n}",
            TEMPERATURE_Value, HUMIDITY_Value, PRESSURE_Value, PROXIMITY_Value,
            ACC_Value[0], ACC_Value[1], ACC_Value[2],
            GYR_Value[0], GYR_Value[1], GYR_Value[2],
            MAG_Value[0], MAG_Value[1], MAG_Value[2],
-		   vehicleSpeed, engineRPM, fuelAirRatio);	// Values to be replaced with ODB data/calculations
+		   vehicleSpeed, engineRPM, mpg);	// Values to be replaced with ODB data/calculations
   }
  #endif
   /* Check total size to be less than buffer size
@@ -261,7 +265,7 @@ int PrepareMqttPayload(char * PayloadBuffer, int PayloadSize, char * deviceID)
 //}
 
 // Added functionality for getting return information from ODB reader
-int getInputStringSensor(char* inputString, int commandType)
+float getInputStringSensor(char* inputString, int commandType)
 {
   //static int counter = 0;
   int len = 24;	// change to 8?
@@ -365,12 +369,22 @@ int getInputStringSensor(char* inputString, int commandType)
  		  f1 = (float)strtol(data1, NULL, 16);
  		  strncpy(data2, inputString+9, 2);
  		  f2 = (float)strtol(data2, NULL, 16);
- 		  //float a1 = 2/65536;
  		  final = (2.0/65536.0)*(256.0*f1+f2);
  		  break;
  	    }
 
     return final;
 }
+
+float calculateMPG() {
+
+	float calculation = 0.0;
+
+	// Insert MPG caclulation code
+
+
+	return calculation;
+}
+
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
