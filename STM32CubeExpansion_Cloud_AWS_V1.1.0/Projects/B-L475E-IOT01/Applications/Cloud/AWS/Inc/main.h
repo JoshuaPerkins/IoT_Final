@@ -81,11 +81,6 @@
 #include "sensors_data.h"
 #define RFU
 
- // Defining IOT Project PUBLISH count for aws publishes
-#ifndef IOT_PUBLISH_COUNT
-#define IOT_PUBLISH_COUNT 5
-#endif
-
 #ifdef USE_MBED_TLS
 extern int mbedtls_hardware_poll( void *data, unsigned char *output, size_t len, size_t *olen );
 #endif /* USE_MBED_TLS */
