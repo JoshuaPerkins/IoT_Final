@@ -79,10 +79,12 @@ static char outputString1[24];
 static char outputString2[24];
 static char outputString3[24];
 static char outputString4[24];
+static char outputString5[24];
 static float vehicleSpeed = 0.0;
 static float intakePressure = 0.0;
 static float engineRPM = 0.0;
 static float fuelAirRatio = 0.0;
+static float intakeTemp = 0.0;
 static float mpg = 0.0;
 
 /* Private function prototypes -----------------------------------------------*/
@@ -176,6 +178,8 @@ int PrepareMqttPayload(char * PayloadBuffer, int PayloadSize, char * deviceID)
     engineRPM = getInputStringSensor(outputString3, 3);
 
     fuelAirRatio = getInputStringSensor(outputString4, 4);
+
+    intakeTemp = getInputStringSensor(outputString5, 5);
 
     mpg = calculateMPG();
   }
@@ -286,6 +290,9 @@ float getInputStringSensor(char* inputString, int commandType)
     case 4:
       printf("0144\r");
       break;
+    case 5:
+      printf("010F\r");
+      break;
   }
 
   c = getchar();
@@ -343,34 +350,40 @@ float getInputStringSensor(char* inputString, int commandType)
 
  	    switch(commandType)
  	    {
- 	    	  // 010D: Vehicle Speed
+ 	      // 010D: Vehicle Speed
  		  case 1:
- 		  strncpy(data1, inputString+6, 2);
- 		  f1 = (float)strtol(data1, NULL, 16);
- 		  final = f1;
- 		  break;
+			  strncpy(data1, inputString+6, 2);
+			  f1 = (float)strtol(data1, NULL, 16);
+			  final = f1 * 0.6214;
+			  break;
  		  // 010B: Intake manifold absolute pressure
  		  case 2:
- 		  strncpy(data1, inputString+6, 2);
- 		  f1 = (float)strtol(data1, NULL, 16);
- 		  final = f1;
- 		  break;
- 		// 010C: Engine RPM
- 		case 3:
- 		  strncpy(data1, inputString+6, 2);
- 		  f1 = (float)strtol(data1, NULL, 16);
- 		  strncpy(data2, inputString+9, 2);
- 		  f2 = (float)strtol(data2, NULL, 16);
- 		  final = (256.0*f1 + f2)/4.0;
- 		  break;
- 		// 0144: Fuel-Air commanded equivalence ratio
- 		case 4:
- 		  strncpy(data1, inputString+6, 2);
- 		  f1 = (float)strtol(data1, NULL, 16);
- 		  strncpy(data2, inputString+9, 2);
- 		  f2 = (float)strtol(data2, NULL, 16);
- 		  final = (2.0/65536.0)*(256.0*f1+f2);
- 		  break;
+			  strncpy(data1, inputString+6, 2);
+			  f1 = (float)strtol(data1, NULL, 16);
+			  final = f1;
+			  break;
+ 		  // 010C: Engine RPM
+ 		  case 3:
+ 			  strncpy(data1, inputString+6, 2);
+			  f1 = (float)strtol(data1, NULL, 16);
+			  strncpy(data2, inputString+9, 2);
+			  f2 = (float)strtol(data2, NULL, 16);
+			  final = (256.0*f1 + f2)/4.0;
+			  break;
+		  // 0144: Fuel-Air commanded equivalence ratio
+ 		  case 4:
+			  strncpy(data1, inputString+6, 2);
+			  f1 = (float)strtol(data1, NULL, 16);
+			  strncpy(data2, inputString+9, 2);
+			  f2 = (float)strtol(data2, NULL, 16);
+			  final = (2.0/65536.0)*(256.0*f1+f2);
+			  break;
+		  // 010F: Intake temperature
+ 		  case 5:
+			  strncpy(data1, inputString+6, 2);
+			  f1 = (float)strtol(data1, NULL, 16);
+			  final = f1 - 40;
+			  break;
  	    }
 
     return final;
@@ -379,9 +392,20 @@ float getInputStringSensor(char* inputString, int commandType)
 float calculateMPG() {
 
 	float calculation = 0.0;
+	// volumetric efficiency estimate
+	float VE = 72.0;
+	// engine displacement
+	float ED = 2.0;
+	// molecular mass of air constant
+	float MM = 28.97;
+	// mole constant
+	float R = 8.314;
 
-	// Insert MPG caclulation code
+	float IMAP = engineRPM * intakePressure / (intakeTemp+273.15);
 
+	float MAF = (IMAP/120)*(VE/100)*ED*(MM/R);
+
+	calculation = (14.7*6.17*4.54 * vehicleSpeed) / (3600 * MAF/100);
 
 	return calculation;
 }
